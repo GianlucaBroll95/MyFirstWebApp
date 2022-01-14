@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My first WebApp</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h2>My First Web App</h2>
+<p>This is a simple app that shows the effect of transaction costs and rebalancing
+    frequency on portfolio performance.</p>
+<form action="/" method="post">
+    {{input_data.tickers.label}} {{input_data.tickers}}
+    <br>
+    {{input_data.rebalancing_frequency.label}} {{input_data.rebalancing_frequency}}
+    <br>
+    {{input_data.data_length.label}} {{input_data.data_length}}
+    <br>
+    {{input_data.button}}
+    <br>
+    {% if show_chart %}
+    <label>
+        Trading cost:
+        <input oninput="updateData(this);amount.value=tc_rangevalue[tc.value]" type="range" id="tc_range" min="0"
+               max="49" value="0">
+
+        <output id="amount" name="amount" for="tc_range"> 0</output>
+        %
+    </label>
+
+    <canvas id="chart" width="800" height="600"></canvas>
+    <script>
+    const tc_rangevalue = {{tc_rangevalue | safe}}
+    const labels = {{labels | safe}}
+    const gross = {{gross | safe}}
+    const net = {{net | safe}}
+    const data = {
+        labels: labels,
+        datasets:
+            [{
+            label: "Gross Value",
+            data: gross,
+            borderColor: "blue",
+            fill: false,
+            borderWidth: 1,
+            backgroundColor: "blue",
+            pointRadius: 0
+            },
+            {
+            label: "Net Value",
+            data: net[0],
+            borderColor: "red",
+            fill: false,
+            borderWidth: 1,
+            backgroundColor: "red",
+            pointRadius: 0
+            }
+        ]}
+    var ctx = document.getElementById("chart").getContext("2d");
+    const chart = new Chart(ctx, {
+        type: "line",
+        data: data,
+        options: {
+            responsive: false,
+            plugins: {
+                title: {
+                display: true,
+                text: "Portfolio Evolution"
+                },
+                legend: {
+                position: "bottom"
+                },
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    grid: {
+                        display: true
+                        },
+                    ticks: {
+                    callback: function(value, index, ticks) {
+                        return "$" + value;
+                        }
+                    }
+                }
+            }
+        }
+    });
+    const tc = document.getElementById("tc_range");
+    function updateData(range) {
+        console.log(range.value);
+        const net_data = net[tc.value];
+        chart.data.datasets[1].data = net_data;
+        chart.update();
+    }
+
+
+    </script>
+    {% endif %}
+</form>
+</body>
+</html>
