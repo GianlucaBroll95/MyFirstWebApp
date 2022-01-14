@@ -34,7 +34,6 @@ def chart_page():
                            tc_rangevalue=list(np.linspace(0, 0.05, 50).round(3) * 100), show_chart=True)
 
 
-@cache.cached()
 def get_data(start_date=None):
     input_data = InputData(request.form)
     length = HISTORY_MAP.get(input_data.data_length.data, None)
