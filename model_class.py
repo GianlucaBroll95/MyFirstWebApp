@@ -34,7 +34,7 @@ class TimeSeriesDownloader:
         self.info = info
 
     def download_data(self):
-        print("donwloading...")
+        print("downloading...")
         try:
             bulk_data = yf.download(tickers=self.tickers, start=self.start_date, end=self.end_date, progress=False)
         except ValueError() as err:
@@ -78,7 +78,7 @@ class Portfolio:
         """
         Args:
             data (pd.DataFrame): pandas dataframe
-            rebalancing_frequency (str | pandas.tseries.offsets | int): frequency with which the portfolio is
+            rebalancing_frequency (str | pandas.tseries.offsets | int | np.array): frequency with which the portfolio is
                                                             rebalanced, valid Pandas Offsets subclasses are,
                                                             for example: "B", "W", "BM" (see Pandas Offsets
                                                             documentation for the full list). If an integer is provided,
@@ -109,10 +109,22 @@ class Portfolio:
             Pandas DataFrame of portfolio price
         """
         if self._portfolio_price is None:
-            gross = initial_wealth * np.cumprod(
-                1 + self.portfolio_return()[0][["Gross Return"]].rename(columns={"Gross Return": "Gross"}), axis=0)
-            net = initial_wealth * np.cumprod(1 + self.portfolio_return()[1], axis=0)
-            self._portfolio_price = gross, net
+            gross_data, net_data = self.portfolio_return()  # list of tuples - (gross, net)
+            if isinstance(self.rebalancing_frequency, list):
+                gross_price_matrix = list()
+                net_price_matrix = list()
+                for gross_ret, net_ret in zip(gross_data, net_data):
+                    gross = initial_wealth * np.cumprod(
+                        1 + gross_ret[["Gross Return"]].rename(columns={"Gross Return": "Gross"}), axis=0)
+                    net = initial_wealth * np.cumprod(1 + net_ret, axis=0)
+                    gross_price_matrix.append(gross)
+                    net_price_matrix.append(net)
+                self._portfolio_price = gross_price_matrix, net_price_matrix
+            else:
+                gross = initial_wealth * np.cumprod(
+                    1 + self.portfolio_return()[0][["Gross Return"]].rename(columns={"Gross Return": "Gross"}), axis=0)
+                net = initial_wealth * np.cumprod(1 + self.portfolio_return()[1], axis=0)
+                self._portfolio_price = gross, net
         return self._portfolio_price
 
     def portfolio_return(self):
@@ -121,27 +133,56 @@ class Portfolio:
         Returns:
             Pandas DataFrame of portfolio returns
         """
+
         if self._portfolio_return is None:
             weights, turnover = self._weight_evolution()
             ret = self._get_ret() if self.weight == "EW" else self._get_ret().iloc[Portfolio.OFFSET:]
-            port_ret = np.diagonal(np.matmul(ret.to_numpy(), weights.to_numpy().T))
-            trading_cost = transaction_cost(turnover, self.tc)
-            gross_ret = pd.merge(pd.DataFrame(port_ret, index=ret.index, columns=["Gross Return"]),
-                                 trading_cost, left_index=True, right_index=True, how="outer")
-            if trading_cost.shape[0] > 1:
-                net_ret = pd.DataFrame(
-                    gross_ret[["Gross Return"]].values - gross_ret.iloc[:, 1:].fillna(value=0).values,
-                    index=gross_ret.index)
+
+            if isinstance(self.rebalancing_frequency, list):
+                gross_ret_matrix = list()
+                net_ret_matrix = list()
+                for w, t in zip(weights, turnover):
+                    port_ret = np.diagonal(np.matmul(ret.to_numpy(), w.to_numpy().T))
+                    trading_cost = transaction_cost(t, self.tc)
+                    gross_ret = pd.merge(pd.DataFrame(port_ret, index=ret.index, columns=["Gross Return"]),
+                                         trading_cost, left_index=True, right_index=True, how="outer")
+                    if self.tc.shape[0] > 1:
+                        net_ret = pd.DataFrame(
+                            gross_ret[["Gross Return"]].values - gross_ret.iloc[:, 1:].fillna(value=0).values,
+                            index=gross_ret.index)
+                    else:
+                        net_ret = gross_ret["Gross Return"].sub(gross_ret["Transaction Cost"], fill_value=0)
+                    gross_ret_matrix.append(gross_ret[["Gross Return"]])
+                    net_ret_matrix.append(net_ret)
+                self._portfolio_return = gross_ret_matrix, net_ret_matrix
             else:
-                net_ret = gross_ret["Gross Return"].sub(gross_ret["Transaction Cost"], fill_value=0)
-            self._portfolio_return = gross_ret[["Gross Return"]], net_ret
+                port_ret = np.diagonal(np.matmul(ret.to_numpy(), weights.to_numpy().T))
+                trading_cost = transaction_cost(turnover, self.tc)
+                gross_ret = pd.merge(pd.DataFrame(port_ret, index=ret.index, columns=["Gross Return"]),
+                                     trading_cost, left_index=True, right_index=True, how="outer")
+                if self.tc.shape[0] > 1:
+                    net_ret = pd.DataFrame(
+                        gross_ret[["Gross Return"]].values - gross_ret.iloc[:, 1:].fillna(value=0).values,
+                        index=gross_ret.index)
+                else:
+                    net_ret = gross_ret["Gross Return"].sub(gross_ret["Transaction Cost"], fill_value=0)
+                self._portfolio_return = gross_ret[["Gross Return"]], net_ret
         return self._portfolio_return
 
     def plotting_data(self):
-        gross = self.portfolio_price()[0].round().values.squeeze().tolist()
-        net = self.portfolio_price()[1].round()
-        time_index = self.portfolio_price()[0].index.strftime("%Y-%m-%d").tolist()
-        return time_index, gross, [list(d[1]) for d in net.iteritems()]
+        if isinstance(self.rebalancing_frequency, list):
+            gross_data, net_nata = self.portfolio_price()
+            time_index = gross_data[0].index.strftime("%Y-%m-%d").tolist()
+
+
+            gross = [data.round().values.squeeze().tolist() for data in gross_data]
+            net = [[d[1].round().values.squeeze().tolist() for d in data.iteritems()] for data in net_nata]
+            return time_index, gross, net
+        else:
+            gross = self.portfolio_price()[0].round().values.squeeze().tolist()
+            net = self.portfolio_price()[1].round()
+            time_index = self.portfolio_price()[0].index.strftime("%Y-%m-%d").tolist()
+            return time_index, gross, [list(d[1]) for d in net.iteritems()]
 
     def _weight_evolution(self):
         """
@@ -152,22 +193,44 @@ class Portfolio:
         """
         if self._weights is None and self._turnover is None:
             ret = self._get_ret() if self.weight == "EW" else self._get_ret().iloc[Portfolio.OFFSET:]
-            weights = np.expand_dims(self._initial_weights(), axis=0)
-            rebalancing_date = self._rebalancing_date()
-            turnover = dict()
-            for n in range(1, len(ret)):
-                if n - 1 == 0:
-                    w_next = update_weight(ret.iloc[0], weights[0])
-                    # turnover[ret.index[0]] = self._initial_weights()
-                    turnover[ret.index[0]] = np.zeros(self.data.shape[1])
-                elif (d := ret.index[n - 1]) in rebalancing_date:
-                    w_next = self._calculate_weight(current_date=d)
-                    turnover[d] = abs(w_next - update_weight(ret.iloc[n - 1], weights[n - 1]))
-                else:
-                    w_next = update_weight(ret.iloc[n - 1], weights[n - 1])
-                weights = np.append(weights, np.expand_dims(w_next, axis=0), axis=0)
-            self._weights = pd.DataFrame(weights, index=ret.index)
-            self._turnover = pd.DataFrame.from_dict(turnover, orient="index", columns=self.data.columns)
+            if isinstance(self.rebalancing_frequency, list):
+                weight_matrix = list()
+                turn_matrix = list()
+                rebalancing_date = self._rebalancing_date()
+                for idx, reb in enumerate(self.rebalancing_frequency):
+                    weights = np.expand_dims(self._initial_weights(), axis=0)
+                    turnover = dict()
+                    for n in range(1, len(ret)):
+                        if (d := ret.index[n - 1]) in rebalancing_date[idx]:
+                            w_next = self._calculate_weight(current_date=d)
+                            if n - 1 == 0:
+                                turnover[d] = np.zeros(self.data.shape[1])
+                            else:
+                                turnover[d] = abs(w_next - update_weight(ret.loc[d], weights[n - 1]))
+                        else:
+                            w_next = update_weight(ret.iloc[n - 1], weights[n - 1])
+                        weights = np.append(weights, np.expand_dims(w_next, axis=0), axis=0)
+                    weight_matrix.append(pd.DataFrame(weights, index=ret.index))
+                    turn_matrix.append(pd.DataFrame.from_dict(turnover, orient="index", columns=self.data.columns))
+                self._weights = weight_matrix
+                self._turnover = turn_matrix
+
+            else:
+                weights = np.expand_dims(self._initial_weights(), axis=0)
+                rebalancing_date = self._rebalancing_date()
+                turnover = dict()
+                for n in range(1, len(ret)):
+                    if (d := ret.index[n - 1]) in rebalancing_date:
+                        w_next = self._calculate_weight(current_date=d)
+                        if n - 1 == 0:
+                            turnover[d] = np.zeros(self.data.shape[1])
+                        else:
+                            turnover[d] = abs(w_next - update_weight(ret.loc[d], weights[n - 1]))
+                    else:
+                        w_next = update_weight(ret.iloc[n - 1], weights[n - 1])
+                    weights = np.append(weights, np.expand_dims(w_next, axis=0), axis=0)
+                self._weights = pd.DataFrame(weights, index=ret.index)
+                self._turnover = pd.DataFrame.from_dict(turnover, orient="index", columns=self.data.columns)
         return self._weights, self._turnover
 
     def _rebalancing_date(self):
@@ -177,7 +240,10 @@ class Portfolio:
             Index of rebalancing dates
         """
         ret = self._get_ret().iloc[(0 if self.weight == "EW" else Portfolio.OFFSET):]
-        if isinstance(self.rebalancing_frequency, int):
+
+        if isinstance(self.rebalancing_frequency, list):
+            return [ret.index[np.arange(0, len(ret), reb)] for reb in self.rebalancing_frequency]
+        elif isinstance(self.rebalancing_frequency, int):
             return ret.index[np.arange(0, len(ret), self.rebalancing_frequency)]
         else:
             return ret.asfreq(self.rebalancing_frequency).index
@@ -230,7 +296,10 @@ class Portfolio:
     #                                                 end_date=self.end_date).download_data().dropna()
     #     return self._price_data
 
+
 #
 # data = TimeSeriesDownloader(["BAC", "BF-B", "MMM", "T"]).download_data()
-# p = Portfolio(data, rebalancing_frequency=120, weight="EW", t_cost=np.array([0.1, 0.2]))
-# print(p.plotting_data()[1])
+# p = Portfolio(data, rebalancing_frequency=20, weight="EW", t_cost=np.array([0.01, 0.2]))
+# print(p.portfolio_return())
+# print(p.portfolio_price())
+# print(np.array(p.plotting_data()[2]).shape)

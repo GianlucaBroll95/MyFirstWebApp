@@ -43,7 +43,7 @@ def test_invalid_rebalancing_frequency(instance_class, reb_frequency):
         instance_class.reb_frequency = reb_frequency
 
 
-@pytest.mark.parametrize("reb_frequency", [30, "BM"])
+@pytest.mark.parametrize("reb_frequency", [30, "BM", [1, 2, 3]])
 def test_valid_rebalancing_frequency(instance_class, reb_frequency):
     instance_class.reb_frequency = reb_frequency
     assert instance_class.reb_frequency == reb_frequency

@@ -91,6 +91,11 @@ class RebalancingFrequency:
                     f"Invalid frequency type, {self.property_name} must be a valid frequency string or a positive"
                     f" integer")
             instance.__dict__[self.property_name] = value
+        elif isinstance(value, list):
+            if all(isinstance(n, int) for n in value):
+                instance.__dict__[self.property_name] = value
+            else:
+                raise TypeError("Frequency must be either an allowed string value, integer or list of integer")
         elif isinstance(value, str) and value in pd.tseries.frequencies.__dict__["_offset_to_period_map"].keys():
             instance.__dict__[self.property_name] = value
         else:

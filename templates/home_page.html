@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>My first WebApp</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body>
 <h2>My First Web App</h2>
@@ -12,8 +13,6 @@
 <form action="/" method="post">
     {{input_data.tickers.label}} {{input_data.tickers}}
     <br>
-    {{input_data.rebalancing_frequency.label}} {{input_data.rebalancing_frequency}}
-    <br>
     {{input_data.data_length.label}} {{input_data.data_length}}
     <br>
     {{input_data.button}}
@@ -21,13 +20,21 @@
     {% if show_chart %}
     <label>
         Trading cost:
-        <input oninput="updateData(this);amount.value=tc_rangevalue[tc.value]" type="range" id="tc_range" min="0"
+        <input oninput="updateTC(this);amount.value=tc_rangevalue[tc.value]" type="range" id="tc_range" min="0"
                max="49" value="0">
-
         <output id="amount" name="amount" for="tc_range"> 0</output>
         %
     </label>
-
+    <label for="rebalancing_frequency">Rebalancing Frequency:</label>
+    <select onchange="updateRF(this)" name="rebalancing_frequency" id="rebalancing_frequency">
+        <option selected="selected">Select...</option>
+        <option value="0">Daily</option>
+        <option value="1">Weekly</option>
+        <option value="2">Monthly</option>
+        <option value="3">Quarterly</option>
+        <option value="4">Semi-Annually</option>
+        <option value="5">Annually</option>
+    </select>
     <canvas id="chart" width="800" height="600"></canvas>
     <script>
     const tc_rangevalue = {{tc_rangevalue | safe}}
@@ -39,7 +46,7 @@
         datasets:
             [{
             label: "Gross Value",
-            data: gross,
+            data: gross[0],
             borderColor: "blue",
             fill: false,
             borderWidth: 1,
@@ -48,7 +55,7 @@
             },
             {
             label: "Net Value",
-            data: net[0],
+            data: net[0][0],
             borderColor: "red",
             fill: false,
             borderWidth: 1,
@@ -65,7 +72,10 @@
             plugins: {
                 title: {
                 display: true,
-                text: "Portfolio Evolution"
+                text: "Portfolio Evolution",
+                font: {
+                    size: 20
+                    }
                 },
                 legend: {
                 position: "bottom"
@@ -75,7 +85,20 @@
                 x: {
                     grid: {
                         display: false
-                    }
+                    },
+                    type: "time",
+                    time: {
+                        unit: "day"
+                          },
+                    title : {
+                        display: true,
+                        text: 'Time',
+                        font: {
+                            size: 14,
+                            weight: 'bold',
+                            lineHeight: 1.2,
+                            }
+                    },
                 },
                 y: {
                     grid: {
@@ -85,18 +108,41 @@
                     callback: function(value, index, ticks) {
                         return "$" + value;
                         }
+                    },
+                    title : {
+                        display: true,
+                        text: 'Market Value',
+                        font: {
+                            size: 14,
+                            weight: "bold",
+                            lineHeight: 1.2,
+                        }
                     }
                 }
             }
         }
     });
     const tc = document.getElementById("tc_range");
-    function updateData(range) {
+    const rb = document.getElementById("rebalancing_frequency");
+    function updateTC(range) {
         console.log(range.value);
-        const net_data = net[tc.value];
+        const net_data = net[rb.value][tc.value];
         chart.data.datasets[1].data = net_data;
         chart.update();
     }
+
+    function updateRF(rebalancing_frequency) {
+        console.log(rebalancing_frequency.value);
+        const gross_data = gross[rb.value];
+        const net_data = net[rb.value][tc.value];
+        chart.data.datasets[0].data = gross_data;
+        chart.data.datasets[1].data = net_data;
+        chart.update();
+    }
+
+
+
+
 
 
     </script>

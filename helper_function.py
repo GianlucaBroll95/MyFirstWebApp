@@ -92,7 +92,7 @@ def update_weight(ret, weight):
     Helper function to update weight vector accordingly to market movements
     Args:
         ret (np.array): return vector
-        weight (np.array): weight vector
+        weight (np.ndarray): weight vector
     Returns:
         updated weight vector
     """
@@ -104,7 +104,7 @@ def transaction_cost(turnover, tc):
     Helper function to calculate portfolio transaction cost from turnover
     Args:
         turnover (pandas.DataFrame): Pandas DataFrame of turnover for each stocks in the portfolio
-        tc (float): transaction cost
+        tc (float | np.ndarray): transaction cost
 
     Returns:
 
