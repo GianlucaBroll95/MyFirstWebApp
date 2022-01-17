@@ -74,7 +74,7 @@ class Portfolio:
     rebalancing_frequency = RebalancingFrequency(["_weights", "_turnover", "_portfolio_price", "_portfolio_return"])
     OFFSET = 365
 
-    def __init__(self, data, rebalancing_frequency, weight="EW", t_cost=0):
+    def __init__(self, data, rebalancing_frequency, weight="EW", t_cost=0, initial_wealth=1000):
         """
         Args:
             data (pd.DataFrame): pandas dataframe
@@ -88,23 +88,23 @@ class Portfolio:
                                             can be "GMV" (global minimum variance) or "MSR" (max sharpe ratio). If an
                                             array is provided, Portfolio will use it as custom weight vector.
             t_cost (float | np.array): transaction cost of trading stocks
+            initial_wealth (int | flaot): initial amount invested in the portfolio
         """
 
         self.data = data
         self.rebalancing_frequency = rebalancing_frequency
         self.weight = weight
         self.tc = t_cost
+        self.initial_wealth = initial_wealth
         # Caching variables:
         self._weights = None
         self._turnover = None
         self._portfolio_price = None
         self._portfolio_return = None
 
-    def portfolio_price(self, initial_wealth=1000):
+    def portfolio_price(self):
         """
         Function that calculate portfolio price
-        Args:
-            initial_wealth (float | int): the amount invested at portfolio creation
         Returns:
             Pandas DataFrame of portfolio price
         """
@@ -114,16 +114,16 @@ class Portfolio:
                 gross_price_matrix = list()
                 net_price_matrix = list()
                 for gross_ret, net_ret in zip(gross_data, net_data):
-                    gross = initial_wealth * np.cumprod(
+                    gross = self.initial_wealth * np.cumprod(
                         1 + gross_ret[["Gross Return"]].rename(columns={"Gross Return": "Gross"}), axis=0)
-                    net = initial_wealth * np.cumprod(1 + net_ret, axis=0)
+                    net = self.initial_wealth * np.cumprod(1 + net_ret, axis=0)
                     gross_price_matrix.append(gross)
                     net_price_matrix.append(net)
                 self._portfolio_price = gross_price_matrix, net_price_matrix
             else:
-                gross = initial_wealth * np.cumprod(
+                gross = self.initial_wealth * np.cumprod(
                     1 + self.portfolio_return()[0][["Gross Return"]].rename(columns={"Gross Return": "Gross"}), axis=0)
-                net = initial_wealth * np.cumprod(1 + self.portfolio_return()[1], axis=0)
+                net = self.initial_wealth * np.cumprod(1 + self.portfolio_return()[1], axis=0)
                 self._portfolio_price = gross, net
         return self._portfolio_price
 
@@ -173,10 +173,8 @@ class Portfolio:
         if isinstance(self.rebalancing_frequency, list):
             gross_data, net_nata = self.portfolio_price()
             time_index = gross_data[0].index.strftime("%Y-%m-%d").tolist()
-
-
-            gross = [data.round().values.squeeze().tolist() for data in gross_data]
-            net = [[d[1].round().values.squeeze().tolist() for d in data.iteritems()] for data in net_nata]
+            gross = [data.round(2).values.squeeze().tolist() for data in gross_data]
+            net = [[d[1].round(2).values.squeeze().tolist() for d in data.iteritems()] for data in net_nata]
             return time_index, gross, net
         else:
             gross = self.portfolio_price()[0].round().values.squeeze().tolist()
@@ -295,7 +293,6 @@ class Portfolio:
     #         self._price_data = TimeSeriesDownloader(tickers=self.tickers, start_date=self.start_date,
     #                                                 end_date=self.end_date).download_data().dropna()
     #     return self._price_data
-
 
 #
 # data = TimeSeriesDownloader(["BAC", "BF-B", "MMM", "T"]).download_data()

@@ -5,6 +5,9 @@
     <title>My first WebApp</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0/chartjs-plugin-datalabels.min.js"
+            integrity="sha512-R/QOHLpV1Ggq22vfDAWYOaMd5RopHrJNMxi8/lJu8Oihwi4Ho4BRFeiMiCefn9rasajKjnx9/fTQ/xkWnkDACg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <h2>My First Web App</h2>
@@ -15,8 +18,11 @@
     <br>
     {{input_data.data_length.label}} {{input_data.data_length}}
     <br>
+    {{input_data.initial_wealth.label}} {{input_data.initial_wealth}}
+    <br>
     {{input_data.button}}
     <br>
+    <hr>
     {% if show_chart %}
     <label>
         Trading cost:
@@ -25,18 +31,19 @@
         <output id="amount" name="amount" for="tc_range"> 0</output>
         %
     </label>
+    <br>
     <label for="rebalancing_frequency">Rebalancing Frequency:</label>
     <select onchange="updateRF(this)" name="rebalancing_frequency" id="rebalancing_frequency">
-        <option selected="selected">Select...</option>
-        <option value="0">Daily</option>
+        <option selected="selected" value="0">Daily</option>
         <option value="1">Weekly</option>
         <option value="2">Monthly</option>
         <option value="3">Quarterly</option>
         <option value="4">Semi-Annually</option>
         <option value="5">Annually</option>
     </select>
-    <canvas id="chart" width="800" height="600"></canvas>
+    <canvas id="chart" width="900" height="600"></canvas>
     <script>
+    Chart.register(ChartDataLabels);
     const tc_rangevalue = {{tc_rangevalue | safe}}
     const labels = {{labels | safe}}
     const gross = {{gross | safe}}
@@ -51,7 +58,8 @@
             fill: false,
             borderWidth: 1,
             backgroundColor: "blue",
-            pointRadius: 0
+            pointRadius: 0,
+            tension: 0.2
             },
             {
             label: "Net Value",
@@ -60,7 +68,8 @@
             fill: false,
             borderWidth: 1,
             backgroundColor: "red",
-            pointRadius: 0
+            pointRadius: 0,
+            tension: 0.2
             }
         ]}
     var ctx = document.getElementById("chart").getContext("2d");
@@ -69,7 +78,36 @@
         data: data,
         options: {
             responsive: false,
+            layout: {
+                padding: {
+                    right: 100
+                }
+            },
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: context => {
+                            console.log(context);
+                            return context[0].label.slice(0,12).replace(/,(\s+)?$/, '');
+                        },
+                        label: context => {
+                            console.log(context);
+                            return "$" + context.formattedValue;
+                        }
+                    }
+                },
+                datalabels: {
+                    formatter: context => {
+                        console.log(context);
+                        return context.toLocaleString("en-US",{style:"currency", currency:"USD"});
+                    },
+                    anchor: "right",
+                    align: "right",
+                    display: function(context) {
+                        console.log(context.dataIndex[-1])
+                        return (context.dataIndex === context.dataset.data.length-1);
+                    }
+                },
                 title: {
                 display: true,
                 text: "Portfolio Evolution",
@@ -78,7 +116,7 @@
                     }
                 },
                 legend: {
-                position: "bottom"
+                    position: "bottom"
                 },
             },
             scales: {
@@ -88,8 +126,11 @@
                     },
                     type: "time",
                     time: {
-                        unit: "day"
-                          },
+                        unit: "day",
+                        displayFormats: {
+                        day: 'MMM yyyy'
+                    }
+                    },
                     title : {
                         display: true,
                         text: 'Time',
@@ -106,7 +147,7 @@
                         },
                     ticks: {
                     callback: function(value, index, ticks) {
-                        return "$" + value;
+                        return value.toLocaleString("en-US",{style:"currency", currency:"USD"});
                         }
                     },
                     title : {
@@ -139,12 +180,6 @@
         chart.data.datasets[1].data = net_data;
         chart.update();
     }
-
-
-
-
-
-
     </script>
     {% endif %}
 </form>
