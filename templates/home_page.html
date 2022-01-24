@@ -8,41 +8,82 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0/chartjs-plugin-datalabels.min.js"
             integrity="sha512-R/QOHLpV1Ggq22vfDAWYOaMd5RopHrJNMxi8/lJu8Oihwi4Ho4BRFeiMiCefn9rasajKjnx9/fTQ/xkWnkDACg=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        function showCustomInput(that) {
+        if (that.value == "custom") {
+            document.getElementById("custom_weight_input").style.display = "block";
+        } else {
+            document.getElementById("custom_weight_input").style.display = "none";
+        }
+    }
+
+
+
+
+    </script>
 </head>
 <body>
 <h2>My First Web App</h2>
 <p>This is a simple app that shows the effect of transaction costs and rebalancing
     frequency on portfolio performance.</p>
 <form action="/" method="post">
-    {{input_data.tickers.label}} {{input_data.tickers}}
-    <br>
-    {{input_data.data_length.label}} {{input_data.data_length}}
-    <br>
-    {{input_data.initial_wealth.label}} {{input_data.initial_wealth}}
-    <br>
-    {{input_data.button}}
-    <br>
+    {% if show_input %}
     <hr>
-    {% if show_chart %}
-    <label>
-        Trading cost:
-        <input oninput="updateTC(this);amount.value=tc_rangevalue[tc.value]" type="range" id="tc_range" min="0"
-               max="49" value="0">
-        <output id="amount" name="amount" for="tc_range"> 0</output>
-        %
-    </label>
-    <br>
-    <label for="rebalancing_frequency">Rebalancing Frequency:</label>
-    <select onchange="updateRF(this)" name="rebalancing_frequency" id="rebalancing_frequency">
-        <option selected="selected" value="0">Daily</option>
-        <option value="1">Weekly</option>
-        <option value="2">Monthly</option>
-        <option value="3">Quarterly</option>
-        <option value="4">Semi-Annually</option>
-        <option value="5">Annually</option>
-    </select>
-    <canvas id="chart" width="900" height="600"></canvas>
-    <script>
+    <div>
+        {{input_data.tickers.label}} {{input_data.tickers}}
+    </div>
+    <div>
+        {{input_data.data_length.label}} {{input_data.data_length}}
+    </div>
+    <div>
+        {{input_data.initial_wealth.label}} {{input_data.initial_wealth}}
+    </div>
+    <div>
+        <label for="portfolio_strategy">
+            Portfolio strategy
+            <select onchange="showCustomInput(this)" name="portfolio_strategy" id="portfolio_strategy">
+                <option selected="selected" value="EW">Equally Weighted</option>
+                <option value="GMV">Global Minimum Variance Portfolio</option>
+                <option value="MSR">Tangency Portfolio</option>
+                <option value="custom">Custom Weights</option>
+            </select>
+        </label>
+    </div>
+    <div id="custom_weight_input" style="display:none">
+        {{input_data.custom_weights.label}} {{input_data.custom_weights}}
+    </div>
+    {{input_data.button}}
+    {% endif %}
+    {% if not show_input %}
+    You have chosen a portfolio of {{tickers|count}} stocks. Play with the chart below and see how
+    rebalancing frequency and trading cost impact on your final portfolio value.
+    <a href="/">Create another portfolio</a>
+    {% endif %}
+    <hr>
+    <div>
+        {% if show_chart %}
+        <div>
+            <label>
+                Trading cost:
+                <input oninput="updateTC(this);amount.value=tc_rangevalue[tc.value]" type="range" id="tc_range" min="0"
+                       max="49" value="0">
+                <output id="amount" name="amount" for="tc_range"> 0%</output>
+            </label>
+        </div>
+        <div>
+            <label for="rebalancing_frequency">Rebalancing Frequency:</label>
+            <select onchange="updateRF(this)" name="rebalancing_frequency" id="rebalancing_frequency">
+                <option selected="selected" value="0">Daily</option>
+                <option value="1">Weekly</option>
+                <option value="2">Monthly</option>
+                <option value="3">Quarterly</option>
+                <option value="4">Semi-Annually</option>
+                <option value="5">Annually</option>
+            </select>
+        </div>
+        <div>
+            <canvas id="chart" width="900" height="600"></canvas>
+            <script>
     Chart.register(ChartDataLabels);
     const tc_rangevalue = {{tc_rangevalue | safe}}
     const labels = {{labels | safe}}
@@ -180,8 +221,18 @@
         chart.data.datasets[1].data = net_data;
         chart.update();
     }
-    </script>
-    {% endif %}
+
+
+
+
+
+            </script>
+        </div>
+        {% endif %}
+    </div>
 </form>
+<footer>
+    This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.
+</footer>
 </body>
 </html>
