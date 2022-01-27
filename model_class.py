@@ -77,8 +77,8 @@ class Portfolio:
     """
     A Base class for portfolio object
     """
-    weight = WeightVector(sterilize_attr=["_weights", "_turnover", "_portfolio_price", "_portfolio_return"])
-    rebalancing_frequency = RebalancingFrequency(["_weights", "_turnover", "_portfolio_price", "_portfolio_return"])
+    strategy = WeightVector(sterilize_attr=["_weights", "_turnover"])
+    rebalancing_frequency = RebalancingFrequency(["_weights", "_turnover"])
     OFFSET = 1000
 
     def __init__(self, data, rebalancing_frequency, strategy="EW", t_cost=0, initial_wealth=1000):

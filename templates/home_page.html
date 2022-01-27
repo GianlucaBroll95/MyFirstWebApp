@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>My first WebApp</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="static/homepage.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0/chartjs-plugin-datalabels.min.js"
@@ -10,16 +12,20 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         function showCustomInput(that) {
-        if (that.value == "custom") {
-            document.getElementById("custom_weight_input").style.display = "block";
-        } else {
-            document.getElementById("custom_weight_input").style.display = "none";
+            if (that.value == "custom") {
+                document.getElementById("custom_weight_input").style.display = "block";
+                document.getElementById("ticker_div").style = "float:left;width:20%";
+                document.getElementById("strategy_div").style = "float:left;width:20%";
+                document.getElementById("history_div").style = "float:left;width:20%";
+                document.getElementById("wealth_div").style = "float:left;width:20%";
+            } else {
+                document.getElementById("custom_weight_input").style.display = "none";
+                document.getElementById("ticker_div").style = "float:left;width:25%";
+                document.getElementById("strategy_div").style = "float:left;width:25%";
+                document.getElementById("history_div").style = "float:left;width:25%";
+                document.getElementById("wealth_div").style = "float:left;width:25%";
+            }
         }
-    }
-
-
-
-
     </script>
 </head>
 <body>
@@ -29,18 +35,13 @@
 <form action="/" method="post">
     {% if show_input %}
     <hr>
-    <div>
-        {{input_data.tickers.label}} {{input_data.tickers}}
+    <div id="ticker_div" style="float:left;width:25%">
+        {{input_data.tickers.label}} <br> {{input_data.tickers}}
     </div>
-    <div>
-        {{input_data.data_length.label}} {{input_data.data_length}}
-    </div>
-    <div>
-        {{input_data.initial_wealth.label}} {{input_data.initial_wealth}}
-    </div>
-    <div>
+    <div id="strategy_div" style="float:left;width:25%">
         <label for="portfolio_strategy">
-            Portfolio strategy
+            Portfolio strategy:
+            <br>
             <select onchange="showCustomInput(this)" name="portfolio_strategy" id="portfolio_strategy">
                 <option selected="selected" value="EW">Equally Weighted</option>
                 <option value="GMV">Global Minimum Variance Portfolio</option>
@@ -49,39 +50,51 @@
             </select>
         </label>
     </div>
-    <div id="custom_weight_input" style="display:none">
-        {{input_data.custom_weights.label}} {{input_data.custom_weights}}
+    <div id="custom_weight_input" style="display:none;float:left;width:20%">
+        {{input_data.custom_weights.label}} <br> {{input_data.custom_weights}}
     </div>
-    {{input_data.button}}
+    <div id="history_div" style="float:left;width:25%">
+        {{input_data.data_length.label}} <br> {{input_data.data_length}}
+    </div>
+    <div id="wealth_div" style="float:left;width:25%">
+        {{input_data.initial_wealth.label}} <br> {{input_data.initial_wealth}}
+    </div>
+    <div style="clear:left" align="center">
+        {{input_data.button}}
+    </div>
     {% endif %}
     {% if not show_input %}
     You have chosen a portfolio of {{tickers|count}} stocks. Play with the chart below and see how
     rebalancing frequency and trading cost impact on your final portfolio value.
+    <br>
     <a href="/">Create another portfolio</a>
     {% endif %}
     <hr>
     <div>
         {% if show_chart %}
         <div>
-            <label>
-                Trading cost:
-                <input oninput="updateTC(this);amount.value=tc_rangevalue[tc.value]" type="range" id="tc_range" min="0"
-                       max="49" value="0">
-                <output id="amount" name="amount" for="tc_range"> 0%</output>
-            </label>
+            <div id="trading_cost_div">
+                <label>
+                    Trading cost:
+                    <input oninput="updateTC(this);amount.value=tc_rangevalue[tc.value]" type="range" id="tc_range"
+                           min="0"
+                           max="49" value="0">
+                    <output id="amount" name="amount" for="tc_range"> 0%</output>
+                </label>
+            </div>
+            <div id="rebalancing_frequency_div">
+                <label for="rebalancing_frequency">Rebalancing Frequency:</label>
+                <select onchange="updateRF(this)" name="rebalancing_frequency" id="rebalancing_frequency">
+                    <option selected="selected" value="0">Daily</option>
+                    <option value="1">Weekly</option>
+                    <option value="2">Monthly</option>
+                    <option value="3">Quarterly</option>
+                    <option value="4">Semi-Annually</option>
+                    <option value="5">Annually</option>
+                </select>
+            </div>
         </div>
-        <div>
-            <label for="rebalancing_frequency">Rebalancing Frequency:</label>
-            <select onchange="updateRF(this)" name="rebalancing_frequency" id="rebalancing_frequency">
-                <option selected="selected" value="0">Daily</option>
-                <option value="1">Weekly</option>
-                <option value="2">Monthly</option>
-                <option value="3">Quarterly</option>
-                <option value="4">Semi-Annually</option>
-                <option value="5">Annually</option>
-            </select>
-        </div>
-        <div>
+        <div style="clear:left;" class="container">
             <canvas id="chart" width="900" height="600"></canvas>
             <script>
     Chart.register(ChartDataLabels);

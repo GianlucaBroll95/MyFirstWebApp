@@ -53,10 +53,10 @@ def get_data():
 
 
 class InputData(Form):
-    tickers = StringField("Tickers:", default="BAC, BF-B, MMM, T")
-    data_length = SelectField("History length:", choices=HISTORY_CHOICE)
+    tickers = StringField("Tickers:", default="BAC, BF-B, MMM, T", id="tickers")
+    data_length = SelectField("History length:", choices=HISTORY_CHOICE, id="len")
     custom_weights = StringField("Custom weights:")
-    initial_wealth = IntegerField("Initial Investment:", default=1000,
+    initial_wealth = IntegerField("Initial Investment ($):", default=1000,
                                   validators=[NumberRange(min=1000)])
     button = SubmitField("Get Portfolio")
 
