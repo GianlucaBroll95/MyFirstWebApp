@@ -1,0 +1,75 @@
+body {
+    background-color: GhostWhite;
+    padding-top: 0px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+}
+
+h2 {
+    color: darkgrey;
+    text-align: center;
+    font-size: 50px;
+}
+
+footer {
+    font-size:10px;
+}
+
+input[type=text]{
+    width: 45%;
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+input[type=number]{
+    width: 50%;
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+
+#portfolio_strategy {
+    width: 55%;
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+#tickers {
+    width: 45%;
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+#len {
+    width: 50%;
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+#rebalancing_frequency {
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+#rebalancing_frequency_div {
+    width: 40%;
+    float:left;
+}
+
+#trading_cost_div {
+    width:40%;
+    float:left;
+    padding: 8px 8px;
+    margin: 10px 10px;
+}
+
+input[type=submit]{
+    width: 50%;
+    background-color: YellowGreen;
+    color: White;
+    padding: 12px 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bolder;
+}
