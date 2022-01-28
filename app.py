@@ -1,14 +1,12 @@
 import numpy as np
+import pandas as pd
 from flask import Flask, render_template, request
-from flask_caching import Cache
 from wtforms import Form, StringField, SubmitField, SelectField, IntegerField
 from wtforms.validators import NumberRange
+
 from model_class import Portfolio, TimeSeriesDownloader
-import pandas as pd
 
 app = Flask(__name__)
-cache = Cache(config={'CACHE_TYPE': 'simple'})
-cache.init_app(app)
 
 REB_CHOICES = [1, 5, 22, 66, 123, 264]
 T_COST = np.linspace(0, 0.05, 50).round(3)
