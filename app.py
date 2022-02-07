@@ -31,7 +31,7 @@ def home_page():
                               strategy=strategy)
 
         time_index, gross, net = portfolio.plotting_data()
-        tickers = input_data["tickers"].split(", ")
+        tickers = input_data["tickers"].replace(" ", "").split(",")
         return render_template("home_page.html", gross=gross, net=net,
                                labels=time_index, input_data=InputData(),
                                tc_rangevalue=list(map(lambda x: f"{x:.1%}", T_COST)), show_chart=True, show_input=False,
@@ -40,7 +40,7 @@ def home_page():
 
 def get_data():
     input_data = InputData(request.form)
-    tickers = input_data.tickers.data.split(", ")
+    tickers = input_data.tickers.data.replace(" ", "").split(",")
     length = HISTORY_MAP.get(input_data.data_length.data)
     if request.form.to_dict().get("portfolio_strategy") in ["MSR", "GMV"]:
         start_date = pd.to_datetime("today") - pd.tseries.offsets.DateOffset(

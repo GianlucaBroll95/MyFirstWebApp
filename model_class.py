@@ -110,6 +110,9 @@ class Portfolio:
         self._turnover = None
         self._risk_free = None
 
+        if len(self.strategy) != len(self.data.columns):
+            raise ValueError("Weights vector and tickers vector must have the same dimension")
+
     def portfolio_price(self):
         """
         Function that calculate portfolio price
