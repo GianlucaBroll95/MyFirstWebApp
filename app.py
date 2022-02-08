@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request
 from wtforms import Form, StringField, SubmitField, SelectField, IntegerField
-from wtforms.validators import NumberRange
+from wtforms.validators import NumberRange, DataRequired
 
 from model_class import Portfolio, TimeSeriesDownloader
 
@@ -21,6 +21,8 @@ def home_page():
     else:
         input_data = request.form.to_dict()
         if input_data.get("portfolio_strategy") == "custom":
+            if input_data.get("custom_weight") is None:
+                raise ValueError("It seems that your custom weight vector is empty")
             strategy = list(map(lambda x: float(x), input_data.get("custom_weights").split(",")))
         else:
             strategy = input_data.get("portfolio_strategy")
@@ -38,6 +40,11 @@ def home_page():
                                tickers=tickers)
 
 
+@app.errorhandler(Exception)
+def error(err):
+    return render_template("error.html", e=str(err))
+
+
 def get_data():
     input_data = InputData(request.form)
     tickers = input_data.tickers.data.replace(" ", "").split(",")
@@ -51,11 +58,12 @@ def get_data():
 
 
 class InputData(Form):
-    tickers = StringField("Tickers:", default="BAC, BF-B, MMM, T", id="tickers")
+    tickers = StringField("Tickers:", default="BAC, BF-B, MMM, T",
+                          id="tickers", validators=[DataRequired()])
     data_length = SelectField("History length:", choices=HISTORY_CHOICE, id="len")
     custom_weights = StringField("Custom weights:")
     initial_wealth = IntegerField("Initial Investment ($):", default=1000,
-                                  validators=[NumberRange(min=1000)])
+                                  validators=[NumberRange(min=1000), DataRequired()])
     button = SubmitField("Get Portfolio")
 
 
