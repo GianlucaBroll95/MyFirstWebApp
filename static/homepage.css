@@ -73,3 +73,16 @@ input[type=submit]{
     border-radius: 6px;
     font-weight: bolder;
 }
+
+#home_link {
+    display: block;
+    width: 50%;
+    background-color: YellowGreen;
+    color: White;
+    padding: 12px 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bolder;
+    text-decoration: none;
+    text-alignment: center;
+}

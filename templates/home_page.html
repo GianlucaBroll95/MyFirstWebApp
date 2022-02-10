@@ -5,12 +5,12 @@
     <title>My first WebApp</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="static/homepage.css">
+    <script src="{{ url_for('static', filename='functions.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0/chartjs-plugin-datalabels.min.js"
             integrity="sha512-R/QOHLpV1Ggq22vfDAWYOaMd5RopHrJNMxi8/lJu8Oihwi4Ho4BRFeiMiCefn9rasajKjnx9/fTQ/xkWnkDACg=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="./templates/function.js"></script>
 </head>
 <body>
 <h2>My First Web App</h2>
@@ -51,12 +51,12 @@
     You have chosen a portfolio of {{tickers|count}} stocks. Play with the chart below and see how
     rebalancing frequency and trading cost impact on your final portfolio value.
     <br>
-    <a href="/">Create another portfolio</a>
+    <br>
     {% endif %}
     <hr>
-    <div>
-        {% if show_chart %}
-        <div>
+     {% if show_chart %}
+        <div class="container">
+            <div align="center" style="clear:left;" id="tc_rf_input">
             <div id="trading_cost_div">
                 <label>
                     Trading cost:
@@ -77,8 +77,8 @@
                     <option value="5">Annually</option>
                 </select>
             </div>
-        </div>
-        <div style="clear:left;" class="container">
+            </div>
+            <div align="center" style="clear:left;">
             <canvas id="chart" width="900" height="600"></canvas>
             <script>
             Chart.register(ChartDataLabels);
@@ -205,9 +205,13 @@
             const rb = document.getElementById("rebalancing_frequency");
 
             </script>
+            </div>
         </div>
-        {% endif %}
+    <hr>
+    <div align="center">
+        <a href="/" id="home_link">Create another portfolio</a>
     </div>
+    {% endif %}
 </form>
 <footer>
     This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.

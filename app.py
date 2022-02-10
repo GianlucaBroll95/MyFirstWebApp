@@ -42,7 +42,7 @@ def home_page():
 
 @app.errorhandler(Exception)
 def error(err):
-    return render_template("error.html", e=str(err))
+    return render_template("error_page.html", e=str(err))
 
 
 def get_data():

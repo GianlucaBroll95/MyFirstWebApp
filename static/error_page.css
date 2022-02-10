@@ -5,3 +5,16 @@ body {
     padding-right: 20px;
     padding-bottom: 20px;
 }
+
+#home_link {
+    display: block;
+    width: 20%;
+    background-color: YellowGreen;
+    color: White;
+    padding: 12px 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bolder;
+    text-decoration: none;
+    text-align: center;
+}
