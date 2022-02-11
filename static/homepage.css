@@ -12,39 +12,65 @@ h2 {
     font-size: 50px;
 }
 
-footer {
-    font-size:10px;
-}
-
-input[type=text]{
-    width: 45%;
-    padding: 8px 8px;
-    margin: 10px 0px;
-}
-
-input[type=number]{
-    width: 50%;
-    padding: 8px 8px;
-    margin: 10px 0px;
-}
-
-
-#portfolio_strategy {
-    width: 55%;
-    padding: 8px 8px;
-    margin: 10px 0px;
+#ticker_div {
+    width: 25%;
+    float: left;
 }
 
 #tickers {
-    width: 45%;
+    width: 50%;
     padding: 8px 8px;
     margin: 10px 0px;
 }
 
-#len {
+#strategy_div {
+    float: left;
+    width: 25%;
+}
+
+#portfolio_strategy {
+    width:50%;
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+#custom_weights_div {
+    display:none;
+    width: 20%;
+    float: left;
+}
+
+#custom_weights {
     width: 50%;
     padding: 8px 8px;
     margin: 10px 0px;
+}
+
+#wealth_div {
+    width: 25%;
+    float: left;
+}
+
+#initial_wealth {
+    width: 50%;
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+#history_div {
+    width: 25%;
+    float:left;
+}
+
+#history {
+    width: 50%;
+    padding: 8px 8px;
+    margin: 10px 0px;
+}
+
+#rebalancing_frequency_div {
+    width: 45%;
+    float:left;
 }
 
 #rebalancing_frequency {
@@ -52,16 +78,15 @@ input[type=number]{
     margin: 10px 0px;
 }
 
-#rebalancing_frequency_div {
-    width: 40%;
-    float:left;
-}
-
 #trading_cost_div {
-    width:40%;
+    width:45%;
     float:left;
     padding: 8px 8px;
     margin: 10px 10px;
+}
+
+#button_div {
+    clear: left;
 }
 
 input[type=submit]{
@@ -76,7 +101,7 @@ input[type=submit]{
 
 #home_link {
     display: block;
-    width: 50%;
+    width: 200px;
     background-color: YellowGreen;
     color: White;
     padding: 12px 12px;
@@ -85,4 +110,13 @@ input[type=submit]{
     font-weight: bolder;
     text-decoration: none;
     text-alignment: center;
+}
+
+#wrap {
+    width: 900px;
+    margin: auto;
+}
+
+footer {
+    font-size:10px;
 }

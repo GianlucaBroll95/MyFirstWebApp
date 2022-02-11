@@ -19,10 +19,10 @@
 <form action="/" method="post">
     {% if show_input %}
     <hr>
-    <div id="ticker_div" style="float:left;width:25%">
+    <div id="ticker_div">
         {{input_data.tickers.label}} <br> {{input_data.tickers}}
     </div>
-    <div id="strategy_div" style="float:left;width:25%">
+    <div id="strategy_div">
         <label for="portfolio_strategy">
             Portfolio strategy:
             <br>
@@ -34,29 +34,29 @@
             </select>
         </label>
     </div>
-    <div id="custom_weight_input" style="display:none;float:left;width:20%">
+    <div id="custom_weights_div">
         {{input_data.custom_weights.label}} <br> {{input_data.custom_weights}}
     </div>
-    <div id="history_div" style="float:left;width:25%">
+    <div id="history_div">
         {{input_data.data_length.label}} <br> {{input_data.data_length}}
     </div>
-    <div id="wealth_div" style="float:left;width:25%">
+    <div id="wealth_div">
         {{input_data.initial_wealth.label}} <br> {{input_data.initial_wealth}}
     </div>
-    <div style="clear:left" align="center">
+    <div id="button_div" align="center">
         {{input_data.button}}
     </div>
     {% endif %}
     {% if not show_input %}
     You have chosen a portfolio of {{tickers|count}} stocks. Play with the chart below and see how
-    rebalancing frequency and trading cost impact on your final portfolio value.
+    rebalancing frequency and trading costs impact on your final portfolio value.
     <br>
     <br>
     {% endif %}
     <hr>
      {% if show_chart %}
-        <div class="container">
-            <div align="center" style="clear:left;" id="tc_rf_input">
+        <div id="wrap" align="center">
+            <div id="tc_rf_input">
             <div id="trading_cost_div">
                 <label>
                     Trading cost:
@@ -78,7 +78,7 @@
                 </select>
             </div>
             </div>
-            <div align="center" style="clear:left;">
+            <div>
             <canvas id="chart" width="900" height="600"></canvas>
             <script>
             Chart.register(ChartDataLabels);
@@ -213,6 +213,7 @@
     </div>
     {% endif %}
 </form>
+<br>
 <footer>
     This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.
 </footer>

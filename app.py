@@ -21,7 +21,7 @@ def home_page():
     else:
         input_data = request.form.to_dict()
         if input_data.get("portfolio_strategy") == "custom":
-            if input_data.get("custom_weight") is None:
+            if input_data.get("custom_weights") is None:
                 raise ValueError("It seems that your custom weight vector is empty")
             strategy = list(map(lambda x: float(x), input_data.get("custom_weights").split(",")))
         else:
@@ -49,7 +49,9 @@ def get_data():
     input_data = InputData(request.form)
     tickers = input_data.tickers.data.replace(" ", "").split(",")
     length = HISTORY_MAP.get(input_data.data_length.data)
-    if request.form.to_dict().get("portfolio_strategy") in ["MSR", "GMV"]:
+    if length is None:
+        start_date = None
+    elif request.form.to_dict().get("portfolio_strategy") in ["MSR", "GMV"]:
         start_date = pd.to_datetime("today") - pd.tseries.offsets.DateOffset(
             years=length) - pd.offsets.BDay(Portfolio.OFFSET)
     else:
@@ -58,12 +60,19 @@ def get_data():
 
 
 class InputData(Form):
-    tickers = StringField("Tickers:", default="BAC, BF-B, MMM, T",
-                          id="tickers", validators=[DataRequired()])
-    data_length = SelectField("History length:", choices=HISTORY_CHOICE, id="len")
-    custom_weights = StringField("Custom weights:")
-    initial_wealth = IntegerField("Initial Investment ($):", default=1000,
-                                  validators=[NumberRange(min=1000), DataRequired()])
+    tickers = StringField("Tickers:",
+                          default="BAC, BF-B, MMM, T",
+                          id="tickers",
+                          validators=[DataRequired()])
+    data_length = SelectField("History length:",
+                              choices=HISTORY_CHOICE,
+                              id="history")
+    custom_weights = StringField("Custom weights:",
+                                 id="custom_weights")
+    initial_wealth = IntegerField("Initial Investment ($):",
+                                  default=1000,
+                                  validators=[NumberRange(min=1000), DataRequired()],
+                                  id="initial_wealth")
     button = SubmitField("Get Portfolio")
 
 

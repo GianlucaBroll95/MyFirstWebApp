@@ -1,16 +1,16 @@
 function showCustomInput(that) {
             if (that.value == "custom") {
-                document.getElementById("custom_weight_input").style.display = "block";
-                document.getElementById("ticker_div").style = "float:left;width:20%";
-                document.getElementById("strategy_div").style = "float:left;width:20%";
-                document.getElementById("history_div").style = "float:left;width:20%";
-                document.getElementById("wealth_div").style = "float:left;width:20%";
+                document.getElementById("custom_weights_div").style.display = "block";
+                document.getElementById("ticker_div").style = "float:left;width:20%;";
+                document.getElementById("strategy_div").style = "float:left;width:20%;";
+                document.getElementById("history_div").style = "float:left;width:20%;";
+                document.getElementById("wealth_div").style = "float:left;width:20%;";
             } else {
-                document.getElementById("custom_weight_input").style.display = "none";
-                document.getElementById("ticker_div").style = "float:left;width:25%";
-                document.getElementById("strategy_div").style = "float:left;width:25%";
-                document.getElementById("history_div").style = "float:left;width:25%";
-                document.getElementById("wealth_div").style = "float:left;width:25%";
+                document.getElementById("custom_weights_div").style.display = "none";
+                document.getElementById("ticker_div").style = "float:left;width:25%;";
+                document.getElementById("strategy_div").style = "float:left;width:25%;";
+                document.getElementById("history_div").style = "float:left;width:25%;";
+                document.getElementById("wealth_div").style = "float:left;width:25%;";
             }
         }
 
