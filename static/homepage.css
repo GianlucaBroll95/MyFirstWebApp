@@ -6,10 +6,15 @@ body {
     padding-bottom: 20px;
 }
 
-h2 {
+p {
+    font-family: Verdana;
+}
+
+h1 {
     color: darkgrey;
     text-align: center;
-    font-size: 50px;
+    font-size: 40px;
+    font-family: Verdana;
 }
 
 #ticker_div {
@@ -18,9 +23,10 @@ h2 {
 }
 
 #tickers {
-    width: 50%;
+    width: 60%;
     padding: 8px 8px;
     margin: 10px 0px;
+    font-family: Verdana;
 }
 
 #strategy_div {
@@ -29,9 +35,10 @@ h2 {
 }
 
 #portfolio_strategy {
-    width:50%;
+    width:60%;
     padding: 8px 8px;
     margin: 10px 0px;
+    font-family: Verdana;
 }
 
 #custom_weights_div {
@@ -41,9 +48,10 @@ h2 {
 }
 
 #custom_weights {
-    width: 50%;
+    width: 60%;
     padding: 8px 8px;
     margin: 10px 0px;
+    font-family: Verdana;
 }
 
 #wealth_div {
@@ -52,9 +60,10 @@ h2 {
 }
 
 #initial_wealth {
-    width: 50%;
+    width: 60%;
     padding: 8px 8px;
     margin: 10px 0px;
+    font-family: Verdana;
 }
 
 #history_div {
@@ -63,9 +72,10 @@ h2 {
 }
 
 #history {
-    width: 50%;
+    width: 60%;
     padding: 8px 8px;
     margin: 10px 0px;
+    font-family: Verdana;
 }
 
 #rebalancing_frequency_div {
@@ -76,6 +86,7 @@ h2 {
 #rebalancing_frequency {
     padding: 8px 8px;
     margin: 10px 0px;
+    font-family: Verdana;
 }
 
 #trading_cost_div {
@@ -87,16 +98,18 @@ h2 {
 
 #button_div {
     clear: left;
+    font-family: Verdana;
 }
 
 input[type=submit]{
-    width: 50%;
+    width: 25%;
     background-color: YellowGreen;
     color: White;
     padding: 12px 12px;
     border: none;
     border-radius: 6px;
     font-weight: bolder;
+    font-family: Verdana;
 }
 
 #home_link {
@@ -110,6 +123,7 @@ input[type=submit]{
     font-weight: bolder;
     text-decoration: none;
     text-alignment: center;
+    font-family: Verdana;
 }
 
 #wrap {
@@ -119,4 +133,9 @@ input[type=submit]{
 
 footer {
     font-size:10px;
+    font-family: Verdana;
+}
+
+label {
+    font-family: Verdana;
 }

@@ -13,9 +13,44 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-<h2>My First Web App</h2>
+<h1>How do transaction costs and rebalancing frequency affect portfolio value?</h1>
+{% if show_input %}
 <p>This is a simple app that shows the effect of transaction costs and rebalancing
-    frequency on portfolio performance.</p>
+    frequency on portfolio performance. In order to keep things simple, imagine choosing just a bunch of stocks in which
+    investing your money. Once the desired stocks have been identified, the next step is to decide how to build your
+    portfolio. Apart from the simple equally-weighted strategy, the classic financial theory suggests a wise choice
+    would be to optimize the portfolio composition with respect to variance and expected return.
+    That is, performing an optimization <a href="https://en.wikipedia.org/wiki/Markowitz_model#:
+    ~:text=In%20finance%2C%20the%20Markowitz%20model%20-%20put%20forward,analyzing%20various%20possible%20portfolios%20
+    of%20the%20given%20securities."> <i>à la Markowitz</i> </a>.
+</p>
+<p>
+    The optimization process returns a weights vector that indicates how to divide the money among the selected stocks.
+    Obviously, the real portfolio composition is aligned with this vector just for a small fraction of time: subsequent market
+    movements will inevitably affect portfolio weights. Thus, it is necessary to decide how frequently the portfolio
+    should be rebalanced. In order to closely track the theoretical optimal portfolio, the rebalancing frequency should
+    occur <i>continuously</i>. It follows that the higher is the rebalancing frequency, the more precise the portfolio
+    construction is.
+</p>
+<p>
+    However, the real world poses several challenges to a <i>continuously rebalanced</i> portfolio. Indeed, the
+    non-frictionless of markets would surely hamper the performance of a portfolio with this rebalancing approach. The
+    main obstacle is represented by the following elements:
+    <ul style="font-family:Verdana;">
+        <li><b>Transaction costs:</b> these costs are the most direct one and mainly comprehend the cost you have to
+            pay to the broker handling your transactions;</li>
+        <li><b>Bid-Ask spread:</b> this cost can be imputed to the action of market makers. Market makers are committed
+            with providing the market with liquidity, that is ensuring that the transaction you intend to make will
+            eventually find a counterpart willing to do the opposite. To do so, the market maker acts as a <i>third party</i>,
+            it purchase at the bid price and sell at the ask price. The market maker then retains the bid-ask spread as a
+            profit;</li>
+        <li><b>Slippage:</b> this cost is relevant for less liquid stocks. It refers to the impact that your transaction
+            might have on the bid/ask prices. This could result in the transaction being executed at a different price
+            than the one estimated;</li>
+        <li><b>Fiscal costs:</b>;</li>
+    </ul>
+</p>
+{% endif %}
 <form action="/" method="post">
     {% if show_input %}
     <hr>
@@ -48,8 +83,10 @@
     </div>
     {% endif %}
     {% if not show_input %}
-    You have chosen a portfolio of {{tickers|count}} stocks. Play with the chart below and see how
-    rebalancing frequency and trading costs impact on your final portfolio value.
+    <p>
+        You have chosen a portfolio of {{tickers|count}} stocks. Play with the chart below and see how
+        rebalancing frequency and trading costs impact on your final portfolio value.
+    </p>
     <br>
     <br>
     {% endif %}

@@ -17,4 +17,9 @@ body {
     font-weight: bolder;
     text-decoration: none;
     text-align: center;
+    font-family:Verdana;
+}
+
+h2 {
+    font-family: Verdana;
 }

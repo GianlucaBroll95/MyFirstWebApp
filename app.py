@@ -21,8 +21,8 @@ def home_page():
     else:
         input_data = request.form.to_dict()
         if input_data.get("portfolio_strategy") == "custom":
-            if input_data.get("custom_weights") is None:
-                raise ValueError("It seems that your custom weight vector is empty")
+            if not input_data.get("custom_weights"):
+                raise ValueError("It seems that your custom weight vector is empty!")
             strategy = list(map(lambda x: float(x), input_data.get("custom_weights").split(",")))
         else:
             strategy = input_data.get("portfolio_strategy")
