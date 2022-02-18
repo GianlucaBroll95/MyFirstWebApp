@@ -94,15 +94,12 @@
     <hr>
      {% if show_chart %}
         <div id="wrap" align="center">
-            <div id="tc_rf_input">
             <div id="trading_cost_div">
-                <label>
-                    Trading cost:
-                    <input oninput="updateTC(this);amount.value=tc_rangevalue[tc.value]" type="range" id="tc_range"
+                <label for="trading_cost"> Trading cost: </label>
+                    <input oninput="updateTC(this);amount.value=tc_rangevalue[tc.value]" type="range" id="trading_cost" name="trading_cost"
                            min="0"
                            max="49" value="0">
                     <output id="amount" name="amount" for="tc_range"> 0%</output>
-                </label>
             </div>
             <div id="rebalancing_frequency_div">
                 <label for="rebalancing_frequency">Rebalancing Frequency:</label>
@@ -114,7 +111,6 @@
                     <option value="4">Semi-Annually</option>
                     <option value="5">Annually</option>
                 </select>
-            </div>
             </div>
             <div>
             <canvas id="chart" width="1000" height="600"></canvas>
@@ -239,9 +235,8 @@
                     }
                 }
             });
-            const tc = document.getElementById("tc_range");
+            const tc = document.getElementById("trading_cost");
             const rb = document.getElementById("rebalancing_frequency");
-
             </script>
             </div>
         </div>

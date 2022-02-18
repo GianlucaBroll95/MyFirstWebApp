@@ -82,20 +82,25 @@ h1 {
     font-family: Verdana;
 }
 
-#rebalancing_frequency_div {
-    width: 45%;
-    float:left;
-}
-
-#rebalancing_frequency {
-    padding: 8px 8px;
-    margin: 10px 0px;
-    font-family: Verdana;
-}
-
 #trading_cost_div {
     width:45%;
     float:left;
+    padding: 0px 8px;
+    margin: 10px 10px;
+}
+
+#trading_cost {
+    font-family: Verdana;
+}
+
+#rebalancing_frequency_div {
+    width: 45%;
+    float:left;
+    padding: 6px 0px;
+}
+
+#rebalancing_frequency {
+    font-family: Verdana;
     padding: 8px 8px;
     margin: 10px 10px;
 }
